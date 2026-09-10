@@ -1,49 +1,94 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Rigidbody _rb;
+    [Header("Movement")]
+    public float speed = 6.0f;
+    public float mouseSensitivity = 0.1f;
+    private Vector3 playerVelocity;
+    private readonly float gravity = -9.81f;
+    private readonly float jumpHeight = 1.5f;
+    private bool isGrounded;
+    private float xRotation;
     
-    private Vector2 _movement;
-    [SerializeField] private int speed = 10;
+    public Transform cameraHolder;
     
-    public InputActionAsset asset;
-    private InputActionMap _playerMap;
-    private InputAction _moveAction;
-    private InputAction _jumpAction;
-    private InputAction _lookAction;
+    [Header("Input Actions")]
+    [SerializeField] private InputActionAsset inputActions;
+    private InputAction moveAction;
+    private InputAction lookAction;
+    private InputAction jumpAction;
+    
+    [Header("Ending")]
+    private UnityEvent onReachedEnding;
+    
+    private CharacterController characterController;
+    
 
     private void OnEnable()
     {
-        _playerMap  = asset.FindActionMap("Player");
-        _playerMap.Enable();
+        inputActions.FindActionMap("Player").Enable();
     }
 
     private void OnDisable()
     {
-        _playerMap  = asset.FindActionMap("Player");
-        _playerMap.Disable();
+        inputActions.FindActionMap("Player").Disable();
     }
-
+    
     private void Awake()
     {
-        _playerMap  = asset.FindActionMap("Player");
-        _moveAction  = _playerMap.FindAction("Move");
-        _jumpAction = _playerMap.FindAction("Jump");
-        _lookAction  = _playerMap.FindAction("Look");
-        _rb = GetComponent<Rigidbody>();
+        characterController = GetComponent<CharacterController>();
+        moveAction = inputActions.FindAction("Move");
+        lookAction = inputActions.FindAction("Look");
+        jumpAction = inputActions.FindAction("Jump");
     }
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+    
     private void Update()
     {
-        _movement = new Vector2(_moveAction.ReadValue<Vector2>().x, _moveAction.ReadValue<Vector2>().y);
-        
+        Movement();
+        MouseLook();
     }
 
-    private void FixedUpdate()
+    private void Movement()
     {
-        _rb.MovePosition(new Vector3(_movement.x, _rb.position.y, _movement.y) * speed * Time.fixedDeltaTime);
+        isGrounded = characterController.isGrounded;
+        if(isGrounded && playerVelocity.y < 0)
+        {
+            playerVelocity.y = -2f;
+        }
+        
+        Vector2 moveInput = moveAction.ReadValue<Vector2>();
+        Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
+        
+        move = Vector3.ClampMagnitude(move, 1f);
+
+        if (isGrounded && jumpAction.WasPressedThisFrame())
+        {
+            playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+        
+        playerVelocity.y += gravity * Time.deltaTime;
+        
+        Vector3 finalMove = move * speed + Vector3.up * playerVelocity.y;
+        characterController.Move(finalMove * Time.deltaTime);
+    }
+    
+    private void MouseLook()
+    {
+        Vector2 lookInput = lookAction.ReadValue<Vector2>();
+        float mouseX = lookInput.x * mouseSensitivity;
+        float mouseY = lookInput.y * mouseSensitivity;
+
+        xRotation -= mouseY;
+        cameraHolder.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        transform.Rotate(Vector3.up * mouseX);
     }
 }
