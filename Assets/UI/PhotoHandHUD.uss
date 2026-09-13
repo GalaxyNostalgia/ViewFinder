@@ -1,0 +1,38 @@
+.hud-root {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+/* Centered yellow square outline - size is also set from code (PhotoHandHUD.SetSquareSize)
+   so it always matches SimplePhotoCapture's squareSizePixels; these values are just the
+   startup default. */
+.square-outline {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 320px;
+    height: 320px;
+    margin-left: -160px;
+    margin-top: -160px;
+    border-width: 3px;
+    border-color: rgb(255, 221, 0);
+}
+
+/* The "photo in your hand" card, bottom-right corner */
+.photo-card {
+    position: absolute;
+    right: 40px;
+    bottom: 40px;
+    width: 180px;
+    height: 220px;
+    background-color: rgb(255, 255, 255);
+    padding: 8px 8px 28px 8px;
+    rotate: 4deg;
+}
+
+.photo-image {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(20, 20, 20);
+}

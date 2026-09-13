@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="PhotoHandHUD.uss" />
+    <ui:VisualElement name="hud-root" class="hud-root">
+        <ui:VisualElement name="square-outline" class="square-outline" />
+        <ui:VisualElement name="photo-card" class="photo-card">
+            <ui:VisualElement name="photo-image" class="photo-image" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
