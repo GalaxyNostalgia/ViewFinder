@@ -21,6 +21,14 @@ public class Polaroid : MonoBehaviour
     [Tooltip("How quickly the zoom eases in and out.")]
     public float aimSpeed = 12f;
 
+    [Header("Audio")]
+    [Tooltip("Shutter click, played the moment the photo is taken. Drop a clip from Assets/Audio here.")]
+    public AudioClip shutterClip;
+
+    [Range(0f, 1f)]
+    public float shutterVolume = 1f;
+
+    AudioSource shutterSource;
     Camera previewCamera;
     RenderTexture previewTexture;
     float defaultFieldOfView;
@@ -40,6 +48,7 @@ public class Polaroid : MonoBehaviour
     {
         defaultFieldOfView = playerCamera.fieldOfView;
         CreatePreviewCamera();
+        CreateShutterSource();
 
         if (hud != null)
             hud.HidePhoto();
@@ -58,6 +67,20 @@ public class Polaroid : MonoBehaviour
         previewCamera.targetTexture = previewTexture;
 
         previewCamera.farClipPlane = frustum.captureDistance;
+    }
+
+    // Scenes built before the shutter existed have no AudioSource on the Polaroid,
+    // so make one rather than relying on RequireComponent to have added it.
+    void CreateShutterSource()
+    {
+        shutterSource = GetComponent<AudioSource>();
+
+        if (shutterSource == null)
+            shutterSource = gameObject.AddComponent<AudioSource>();
+
+        shutterSource.playOnAwake = false;
+        shutterSource.loop = false;
+        shutterSource.spatialBlend = 0f;
     }
 
     void Update()
@@ -97,6 +120,9 @@ public class Polaroid : MonoBehaviour
 
     void TakePhoto()
     {
+        if (shutterClip != null)
+            shutterSource.PlayOneShot(shutterClip, shutterVolume);
+
         previewCamera.enabled = false;
 
         if (hud != null)

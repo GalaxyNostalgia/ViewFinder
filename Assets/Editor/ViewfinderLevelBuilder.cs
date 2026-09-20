@@ -99,6 +99,26 @@ public static class ViewfinderLevelBuilder
         SaveScene(scene, Level02Path);
     }
 
+    // The generated scenes get a MusicPlayer for free. The four scenes that already exist
+    // were saved before it did, so this drops one into whichever scene is open.
+    [MenuItem("Tools/Viewfinder/Add Music Player To Open Scene")]
+    public static void AddMusicPlayerToOpenScene()
+    {
+        if (UnityEngine.Object.FindAnyObjectByType<MusicPlayer>() != null)
+        {
+            Debug.Log("This scene already has a MusicPlayer.");
+            return;
+        }
+
+        var go = BuildMusicPlayer();
+
+        Undo.RegisterCreatedObjectUndo(go, "Add Music Player");
+        EditorSceneManager.MarkSceneDirty(go.scene);
+        Selection.activeGameObject = go;
+
+        Debug.Log("Added a MusicPlayer. Drop a clip on its Music field, then save the scene.");
+    }
+
     [MenuItem("Tools/Viewfinder/Set Up Build Scene List")]
     public static void SetUpBuildSettings()
     {
@@ -138,6 +158,7 @@ public static class ViewfinderLevelBuilder
 
         BuildLighting();
         BuildEventSystem();
+        BuildMusicPlayer();
 
         return true;
     }
@@ -167,6 +188,20 @@ public static class ViewfinderLevelBuilder
         var go = new GameObject("EventSystem");
         go.AddComponent<EventSystem>();
         go.AddComponent<InputSystemUIInputModule>();
+    }
+
+    static GameObject BuildMusicPlayer()
+    {
+        var go = new GameObject("MusicPlayer");
+
+        var source = go.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.loop = true;
+        source.spatialBlend = 0f;
+
+        go.AddComponent<MusicPlayer>();
+
+        return go;
     }
 
     static GameObject Cuttable(string name, Vector3 position, Vector3 scale, Material material)
