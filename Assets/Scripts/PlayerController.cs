@@ -1,126 +1,100 @@
 using UnityEngine;
-using System;
-using System.Collections.Generic;
-using System.Collections;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
     public float speed = 6.0f;
-    
     public float mouseSensitivity = 0.1f;
     public Transform cameraHolder;
-    public bool isMoving;
-    public Volume ppProfile;
- 
+
     [Header("Input Actions")]
-    [Tooltip("Vector2 action, e.g. WASD / Left Stick composite")]
     [SerializeField] private InputActionReference moveAction;
-    [Tooltip("Vector2 action bound to Mouse Delta / Right Stick")]
     [SerializeField] private InputActionReference lookAction;
-    [Tooltip("Button action, e.g. Space / South Button")]
     [SerializeField] private InputActionReference jumpAction;
- 
-    private CharacterController characterController;
-    private float verticalVelocity = 0.0f;
-    private float gravity = -9.81f;
-    private float jumpHeight = 1.5f;
-    private float xRotation = 0f;
+
+    const float Gravity = -9.81f;
+    const float JumpHeight = 1.5f;
+
+    CharacterController characterController;
+    float verticalVelocity;
+    float xRotation;
     bool isPlayerActive;
- 
+
     void OnEnable()
     {
         moveAction?.action.Enable();
         lookAction?.action.Enable();
         jumpAction?.action.Enable();
     }
- 
+
     void OnDisable()
     {
         moveAction?.action.Disable();
         lookAction?.action.Disable();
         jumpAction?.action.Disable();
-        
     }
- 
-    void Start()
+
+    void Awake()
     {
         characterController = GetComponent<CharacterController>();
+    }
+
+    void Start()
+    {
         Cursor.lockState = CursorLockMode.Locked;
         isPlayerActive = true;
     }
- 
+
     void Update()
     {
-        if (isPlayerActive)
-        {
-            LookAround();
-            Move();
-        }
+        if (!isPlayerActive)
+            return;
+
+        LookAround();
+        Move();
     }
- 
-    public void ChangePlayerState(bool isActive) {
-        isPlayerActive = isActive;
+
+    public void ChangePlayerState(bool isActive) => isPlayerActive = isActive;
+
+    public void Teleport(Vector3 position, Quaternion rotation)
+    {
+        characterController.enabled = false;
+        transform.SetPositionAndRotation(position, rotation);
+        characterController.enabled = true;
+
+        verticalVelocity = 0f;
+        xRotation = 0f;
+        cameraHolder.localRotation = Quaternion.identity;
     }
- 
+
     void LookAround()
     {
         Vector2 look = lookAction != null ? lookAction.action.ReadValue<Vector2>() : Vector2.zero;
-        
-        float mouseX = look.x * mouseSensitivity;
-        float mouseY = look.y * mouseSensitivity;
- 
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
- 
+
+        xRotation = Mathf.Clamp(xRotation - look.y * mouseSensitivity, -90f, 90f);
+
         cameraHolder.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
+        transform.Rotate(Vector3.up * (look.x * mouseSensitivity));
     }
- 
+
     void Move()
     {
-        Vector2 moveInput = moveAction != null ? moveAction.action.ReadValue<Vector2>() : Vector2.zero;
-        float moveX = moveInput.x;
-        float moveZ = moveInput.y;
- 
-        isMoving = moveX != 0 || moveZ != 0f;
- 
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
- 
+        Vector2 input = moveAction != null ? moveAction.action.ReadValue<Vector2>() : Vector2.zero;
+        Vector3 move = transform.right * input.x + transform.forward * input.y;
+
         if (characterController.isGrounded)
         {
             verticalVelocity = -2f;
+
             if (jumpAction != null && jumpAction.action.WasPressedThisFrame())
-            {
-                verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
-            }
+                verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
         }
         else
         {
-            verticalVelocity += gravity * Time.deltaTime;
+            verticalVelocity += Gravity * Time.deltaTime;
         }
- 
-        Vector3 velocity = move * speed + Vector3.up * verticalVelocity;
-        characterController.Move(velocity * Time.deltaTime);
-    }
-    
- 
-    void OnTriggerEnter(Collider other) {
-        if (other.gameObject.name.Contains("Ending"))
-            EndGame();
-    }
- 
-    void EndGame() {
-        StartCoroutine(Ending());
-    }
- 
-    IEnumerator Ending() {
-        float x = 0;
-        while (x < 0.5f)
-        {
-            x+=Time.deltaTime / 6;
-            yield return null;
-        }
+
+        characterController.Move((move * speed + Vector3.up * verticalVelocity) * Time.deltaTime);
     }
 }

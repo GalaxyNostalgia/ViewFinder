@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu.uss?fileID=7433441132597879392&amp;guid=9662e50fdcdbf614f84dbfa7cb7baa19&amp;type=3#MainMenu"/>
+    <ui:VisualElement name="menu-root" class="menu-root">
+        <ui:VisualElement name="menu-panel" class="menu-panel">
+            <ui:Label text="VIEWFINDER" name="title" class="title" style="-unity-background-scale-mode: stretch-to-fill;"/>
+            <ui:Label text="Photograph the world. Paste it back." name="tagline" class="tagline"/>
+            <ui:Button text="Play" name="play-button" class="menu-button"/>
+            <ui:Button text="Quit" name="quit-button" class="menu-button menu-button--quiet"/>
+        </ui:VisualElement>
+        <ui:Label text="WASD to move  ·  Mouse to look  · Right Click to zoom · Left click to shoot and place" name="hint" class="hint"/>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="LevelEnd.uss" />
+    <ui:VisualElement name="end-panel" class="end-panel">
+        <ui:VisualElement name="end-card" class="end-card">
+            <ui:Label text="Level Complete" name="end-title" class="end-title" />
+            <ui:Button text="Next Level" name="next-button" class="end-button" />
+            <ui:Button text="Main Menu" name="menu-button" class="end-button end-button--quiet" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

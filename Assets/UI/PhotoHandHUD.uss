@@ -4,35 +4,24 @@
     height: 100%;
 }
 
-/* Centered yellow square outline - size is also set from code (PhotoHandHUD.SetSquareSize)
-   so it always matches SimplePhotoCapture's squareSizePixels; these values are just the
-   startup default. */
-.square-outline {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 320px;
-    height: 320px;
-    margin-left: -160px;
-    margin-top: -160px;
-    border-width: 3px;
-    border-color: rgb(255, 221, 0);
-}
-
-/* The "photo in your hand" card, bottom-right corner */
+/* The photo you are holding, bottom-right. Hidden until PhotoHandHUD.ShowPhoto is
+   called, so an empty card never sits on screen. */
 .photo-card {
+    display: none;
     position: absolute;
     right: 40px;
     bottom: 40px;
-    width: 180px;
-    height: 220px;
-    background-color: rgb(255, 255, 255);
-    padding: 8px 8px 28px 8px;
-    rotate: 4deg;
+    width: 240px;
+    background-color: rgb(250, 250, 248);
+    padding: 10px 10px 34px 10px;
+    rotate: 3deg;
+    border-radius: 2px;
 }
 
+/* 16:9 so the preview matches what the capture frustum actually takes. */
 .photo-image {
-    width: 100%;
-    height: 100%;
-    background-color: rgb(20, 20, 20);
+    width: 220px;
+    height: 124px;
+    background-color: rgb(18, 18, 18);
+    -unity-background-scale-mode: scale-and-crop;
 }

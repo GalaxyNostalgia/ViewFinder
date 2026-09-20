@@ -1,77 +1,40 @@
-using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UIElements;
+using UnityEngine;
 
-public class GeneratedMesh 
+public class GeneratedMesh
 {
-    List<Vector3> vertices = new  List<Vector3>();
-    List<Vector3> normals = new List<Vector3>();
-    List<Vector2> uvs = new List<Vector2>();
-    List<List<int>> submeshIndices = new List<List<int>>();
-    
-    public List<Vector3> Vertices { get { return vertices; } set { vertices = value; } }
-    public List<Vector3> Normals { get { return normals; } set { normals = value; } }
-    public List<Vector2> UVs { get { return uvs; } set { uvs = value; } }
-    public List<List<int>> SubmeshIndices { get { return submeshIndices; } set { submeshIndices = value; } }
+    public List<Vector3> Vertices { get; } = new List<Vector3>();
+    public List<Vector3> Normals { get; } = new List<Vector3>();
+    public List<Vector2> UVs { get; } = new List<Vector2>();
+    public List<List<int>> SubmeshIndices { get; } = new List<List<int>>();
 
-    public void AddTriangle(MeshTriangle _triangle)
+    public void AddTriangle(MeshTriangle triangle)
     {
-        int currentVertexCount = vertices.Count;
-        
-        vertices.AddRange(_triangle.Vertices);
-        normals.AddRange(_triangle.Normals);
-        uvs.AddRange(_triangle.UVs);
-        
-        if(submeshIndices.Count < _triangle.SubmeshIndex + 1)
-        {
-            for(int i = submeshIndices.Count; i < _triangle.SubmeshIndex + 1; i++)
-            {
-                submeshIndices.Add(new List<int>());
-            }
-        }
-        
-        for(int i = 0; i < 3; i++)
-        {
-            submeshIndices[_triangle.SubmeshIndex].Add(currentVertexCount + i);
-        }
-    }
-    
-    public void AddTriangle(Vector3[] _vertices, Vector3[] _normals, Vector2[] _uvs, int _submeshIndex, Vector4[] _tangents = null)
-    {
-        int currentVertexCount = vertices.Count;
-        
-        vertices.AddRange(_vertices);
-        normals.AddRange(_normals);
-        uvs.AddRange(_uvs);
-        
-        if(submeshIndices.Count < _submeshIndex + 1)
-        {
-            for(int i = submeshIndices.Count; i < _submeshIndex + 1; i++)
-            {
-                submeshIndices.Add(new List<int>());
-            }
-        }
-        
-        for(int i = 0; i < 3; i++)
-        {
-            submeshIndices[_submeshIndex].Add(currentVertexCount + i);
-        }
+        int currentVertexCount = Vertices.Count;
+
+        Vertices.AddRange(triangle.Vertices);
+        Normals.AddRange(triangle.Normals);
+        UVs.AddRange(triangle.UVs);
+
+        while (SubmeshIndices.Count < triangle.SubmeshIndex + 1)
+            SubmeshIndices.Add(new List<int>());
+
+        for (int i = 0; i < 3; i++)
+            SubmeshIndices[triangle.SubmeshIndex].Add(currentVertexCount + i);
     }
 
     public Mesh GetGeneratedMesh()
     {
-        Mesh mesh = new Mesh();
-        mesh.SetVertices(vertices);
-        mesh.SetNormals(normals);
-        mesh.SetUVs(0, uvs);
-        mesh.SetUVs(1, uvs);
-        
-        mesh.subMeshCount = submeshIndices.Count;
+        var mesh = new Mesh();
+        mesh.SetVertices(Vertices);
+        mesh.SetNormals(Normals);
+        mesh.SetUVs(0, UVs);
+        mesh.SetUVs(1, UVs);
 
-        for(int i = 0; i < submeshIndices.Count; i++)
-        {
-            mesh.SetTriangles(submeshIndices[i], i);
-        }
+        mesh.subMeshCount = SubmeshIndices.Count;
+
+        for (int i = 0; i < SubmeshIndices.Count; i++)
+            mesh.SetTriangles(SubmeshIndices[i], i);
 
         return mesh;
     }
