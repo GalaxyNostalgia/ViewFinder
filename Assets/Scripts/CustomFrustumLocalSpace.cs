@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class CustomFrustumLocalSpace : MonoBehaviour
 {
-    [Tooltip("Camera that defines the shape of the photo. Only its FOV and aspect are used.")]
     public Camera finder;
-
-    [Tooltip("How far into the world the photo reaches, in metres. This is deliberately NOT " +
-             "the camera far clip plane - at 300 a single shot swallows the whole level.")]
     public float captureDistance = 25f;
-
-    [Tooltip("Thickness of the slabs that detect what needs cutting. Negative pushes them " +
-             "outwards, which keeps the frustum volume from re-catching the outside pieces.")]
     public float customOffset = -0.1f;
 
     public Transform capturePoint;

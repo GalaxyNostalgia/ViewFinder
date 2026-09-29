@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class Respawner : MonoBehaviour
 {
-    [Tooltip("Where to put the player. Leave empty to use wherever the player starts the scene.")]
+
     public Transform respawnPoint;
 
     Vector3 startPosition;

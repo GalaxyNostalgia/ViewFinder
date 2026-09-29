@@ -11,18 +11,14 @@ public class Polaroid : MonoBehaviour
 
     public PhotoHandHUD hud;
 
-    [Tooltip("Width of the photo preview texture. Height follows the camera aspect.")]
     public int previewWidth = 320;
 
     [Header("Aiming")]
-    [Tooltip("Field of view while the right mouse button is held.")]
     public float aimFieldOfView = 30f;
 
-    [Tooltip("How quickly the zoom eases in and out.")]
     public float aimSpeed = 12f;
 
     [Header("Audio")]
-    [Tooltip("Shutter click, played the moment the photo is taken. Drop a clip from Assets/Audio here.")]
     public AudioClip shutterClip;
 
     [Range(0f, 1f)]
@@ -69,8 +65,7 @@ public class Polaroid : MonoBehaviour
         previewCamera.farClipPlane = frustum.captureDistance;
     }
 
-    // Scenes built before the shutter existed have no AudioSource on the Polaroid,
-    // so make one rather than relying on RequireComponent to have added it.
+    
     void CreateShutterSource()
     {
         shutterSource = GetComponent<AudioSource>();

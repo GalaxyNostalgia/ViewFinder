@@ -9,7 +9,6 @@ public class CollisionChecker : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Cuttable"))
             frustumLocalSpace.AddObjectToCut(other.gameObject, side);
-        else if (other.gameObject.name.Contains("Ending"))
-            frustumLocalSpace.AddEndingObject(other.gameObject);
+        
     }
 }
